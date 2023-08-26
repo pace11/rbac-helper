@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 
 import {
   Card,
@@ -7,39 +7,120 @@ import {
   Table,
   Space,
   notification,
-  Typography,
 } from 'antd'
-import { ApiOutlined, FileTextOutlined } from '@ant-design/icons'
+import { ApiOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
 import { fetchingApi } from '@/helpers/utils'
 
 import CallApi from './drawer/call-api'
-
-const { Text } = Typography
 
 export default function Rbac() {
   const [isLoading, setLoading] = useState(false)
   const [data, setData] = useState([])
   const [filterData, setFilterData] = useState([])
   const [isOpen, setOpen] = useState(false)
+  const [searchText, setSearchText] = useState('');
+  const [searchedColumn, setSearchedColumn] = useState('');
+  const searchInput = useRef(null);
+
+  const handleSearch = (selectedKeys, confirm, dataIndex) => {
+    console.log('select => ', dataIndex)
+    confirm();
+    setSearchText(selectedKeys[0]);
+    setSearchedColumn(dataIndex);
+  };
+
+  const handleReset = (clearFilters) => {
+    clearFilters();
+    setSearchText('');
+  };
+
+  const getColumnSearchProps = (dataIndex) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+      <div
+        style={{
+          padding: 8,
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
+        <Input
+          ref={searchInput}
+          placeholder={`Search ${dataIndex}...`}
+          value={selectedKeys[0]}
+          onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{
+            marginBottom: 8,
+            display: 'block',
+          }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Search
+          </Button>
+          <Button
+            onClick={() => clearFilters && handleReset(clearFilters)}
+            size="small"
+            style={{
+              width: 90,
+            }}
+          >
+            Reset
+          </Button>
+          <Button
+            type="link"
+            size="small"
+            onClick={() => {
+              close();
+            }}
+          >
+            close
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: (filtered) => (
+      <SearchOutlined
+        style={{
+          color: filtered ? '#1677ff' : undefined,
+        }}
+      />
+    ),
+    onFilter: (value, record) =>
+      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+    onFilterDropdownOpenChange: (visible) => {
+      if (visible) {
+        setTimeout(() => searchInput.current?.select(), 100);
+      }
+    },
+    render: (text) => text
+  });
 
   const columns = [
     {
       title: 'Subject',
       key: 'subject',
       dataIndex: 'subject',
-      render: (subject) => subject,
+      ...getColumnSearchProps('subject'),
     },
     {
       title: 'Domain',
       key: 'domain',
       dataIndex: 'domain',
-      render: (domain) => domain,
+      ...getColumnSearchProps('domain'),
     },
     {
       title: 'Resources',
       key: 'resources',
       dataIndex: 'resources',
-      render: (resources) => resources,
+      ...getColumnSearchProps('resources'),
     },
     {
       title: 'Action',
@@ -143,7 +224,6 @@ export default function Rbac() {
         </Space>
       }
     >
-      <Text>{data.length} records</Text>
       <Table
         rowKey="key"
         dataSource={data}
@@ -151,6 +231,9 @@ export default function Rbac() {
         loading={isLoading}
         style={{ width: '100%' }}
         scroll={{ x: 425 }}
+        pagination={{
+          showTotal: (total) => `${total} total records` 
+        }}
       />
       <CallApi
         isOpen={isOpen}

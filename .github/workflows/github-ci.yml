@@ -3,14 +3,14 @@
 
 # name: Github CI
 
-# on:
-#   push:
-#     branches:
-#       - master
+on:
+  push:
+    branches:
+      - master
 
-# jobs:
-#   run-build:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Build Nextjs in Vercel
-#         run: curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_jIer281L6F3u1cYWGr23Fq6EKfMJ/e6JPVArRzt
+jobs:
+  run-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build Nextjs in Vercel
+        run: curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_sUHucwSAHED4VqcIlNwqxN7y1RUn/3EICJKgavN
