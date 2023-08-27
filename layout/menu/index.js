@@ -7,8 +7,8 @@ module.exports = [
     label: 'Home',
   },
   {
-    key: '/rbac',
+    key: 'rbac',
     icon: <ControlOutlined />,
-    label: 'RBAC'
-  }
+    label: 'RBAC',
+  },
 ]

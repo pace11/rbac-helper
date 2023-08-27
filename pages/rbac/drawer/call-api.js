@@ -1,12 +1,7 @@
 import { Drawer, Space, Button, Form, Input } from 'antd'
 import { CloseOutlined, SwapOutlined } from '@ant-design/icons'
 
-export default function CallApi({
-  isLoading,
-  onClose,
-  isOpen,
-  onSubmit,
-}) {
+export default function CallApi({ isLoading, onClose, isOpen, onSubmit }) {
   const [form] = Form.useForm()
 
   return (
@@ -58,7 +53,7 @@ export default function CallApi({
             },
           ]}
         >
-          <Input size="large" placeholder="https:// ..." />
+          <Input size="large" placeholder="ex: includes http:/https: ..." />
         </Form.Item>
         <Form.Item
           label="Headers Authorization"
@@ -70,15 +65,10 @@ export default function CallApi({
             },
           ]}
         >
-          <Input.TextArea rows={5} size="large" placeholder="Bearer ..." />
+          <Input.TextArea rows={5} size="large" placeholder="ex: without Bearer ..." />
         </Form.Item>
         <Form.Item>
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={isLoading}
-            icon={<SwapOutlined />}
-          >
+          <Button type="primary" htmlType="submit" loading={isLoading} icon={<SwapOutlined />}>
             Sent
           </Button>
         </Form.Item>

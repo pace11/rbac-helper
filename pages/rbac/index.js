@@ -1,15 +1,9 @@
 import { useState, useRef } from 'react'
 
-import {
-  Card,
-  Input,
-  Button,
-  Table,
-  Space,
-  notification,
-} from 'antd'
+import { Card, Input, Button, Table, Space, notification, Select } from 'antd'
 import { ApiOutlined, FileTextOutlined, SearchOutlined } from '@ant-design/icons'
 import { fetchingApi } from '@/helpers/utils'
+import { mappingSubject } from '@/helpers/utils'
 
 import CallApi from './drawer/call-api'
 
@@ -18,21 +12,21 @@ export default function Rbac() {
   const [data, setData] = useState([])
   const [filterData, setFilterData] = useState([])
   const [isOpen, setOpen] = useState(false)
-  const [searchText, setSearchText] = useState('');
-  const [searchedColumn, setSearchedColumn] = useState('');
-  const searchInput = useRef(null);
+  const [searchText, setSearchText] = useState('')
+  const [searchedColumn, setSearchedColumn] = useState('')
+  const searchInput = useRef(null)
 
   const handleSearch = (selectedKeys, confirm, dataIndex) => {
     console.log('select => ', dataIndex)
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
+    confirm()
+    setSearchText(selectedKeys[0])
+    setSearchedColumn(dataIndex)
+  }
 
   const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText('');
-  };
+    clearFilters()
+    setSearchText('')
+  }
 
   const getColumnSearchProps = (dataIndex) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
@@ -78,7 +72,7 @@ export default function Rbac() {
             type="link"
             size="small"
             onClick={() => {
-              close();
+              close()
             }}
           >
             close
@@ -97,11 +91,11 @@ export default function Rbac() {
       record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
+        setTimeout(() => searchInput.current?.select(), 100)
       }
     },
-    render: (text) => text
-  });
+    render: (text) => text,
+  })
 
   const columns = [
     {
@@ -174,18 +168,12 @@ export default function Rbac() {
     if (!keyword) {
       setData(filterData)
     } else {
-      setData((prevState) =>
-        prevState.filter(
-          (item) => item.subject === keyword.toLowerCase(),
-        ),
-      )
+      setData((prevState) => prevState.filter((item) => item.subject === keyword.toLowerCase()))
     }
   }
 
   const exportData = () => {
-    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(data),
-    )}`
+    const jsonString = `data:text/json;chatset=utf-8,${encodeURIComponent(JSON.stringify(data))}`
     const link = document.createElement('a')
     link.href = jsonString
     link.download = `${data[0]?.subject}.json`
@@ -199,26 +187,26 @@ export default function Rbac() {
       bordered={false}
       extra={
         <Space key="desktop-action-agama">
-          <Input.Search
-            placeholder="Search role/subject ..."
-            onSearch={(val) => onSearchRole(val)}
+          <Select
+            style={{ width: '200px' }}
+            showSearch
             allowClear
-            style={{
-              width: 250,
-            }}
-          />
-          <Button
-            icon={<FileTextOutlined />}
-            onClick={exportData}
+            placeholder="Select a subject ..."
+            optionFilterProp="children"
+            onChange={(value) => onSearchRole(value)}
+            filterOption={(input, option) =>
+              (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+            }
+            options={mappingSubject(data).map((item) => ({
+              value: item,
+              label: item,
+            }))}
             disabled={!data.length}
-          >
+          />
+          <Button icon={<FileTextOutlined />} onClick={exportData} disabled={!data.length}>
             Export to JSON
           </Button>
-          <Button
-            type="primary"
-            icon={<ApiOutlined />}
-            onClick={() => setOpen(true)}
-          >
+          <Button type="primary" icon={<ApiOutlined />} onClick={() => setOpen(true)}>
             Add Endpoint
           </Button>
         </Space>
@@ -232,7 +220,7 @@ export default function Rbac() {
         style={{ width: '100%' }}
         scroll={{ x: 425 }}
         pagination={{
-          showTotal: (total) => `${total} total records` 
+          showTotal: (total) => `${total} total records`,
         }}
       />
       <CallApi
