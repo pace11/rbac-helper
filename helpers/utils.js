@@ -14,6 +14,7 @@ export const fetchingApi = async ({ url, authorization, method }) => {
       url,
       headers: {
         Authorization: `Bearer ${authorization}`,
+        'X-Client-Id': 'ESTUARI',
       },
     })
     return result
